@@ -1,0 +1,53 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+N = 100
+steps = 200
+grid = np.zeros((N, N))
+
+def random_fill_lattice(lattice, probability):
+    # Replace zeros with ones based on the given probability
+    mask = np.random.rand(*lattice.shape) < probability
+    lattice[mask] = 1
+    return lattice
+new_grid = random_fill_lattice(grid, 0.4)
+new_grid
+
+def check_neighbors(lattice):
+    new_lattice = lattice.copy()
+    
+    for r in range(N):
+        for c in range(N):
+            neighbors = [
+                lattice[(r - 1) % N, c], lattice[(r + 1) % N, c],
+                lattice[r, (c - 1) % N], lattice[r, (c + 1) % N],
+                lattice[(r + 1) % N, (c + 1) % N], lattice[(r - 1) % N, (c + 1) % N],
+                lattice[(r + 1) % N, (c - 1) % N], lattice[(r - 1) % N, (c - 1) % N]
+            ]
+            
+
+            if lattice[r, c] == 1:
+                if sum(neighbors) < 2:
+                    new_lattice[r, c] = 0
+                elif sum(neighbors) > 3:
+                    new_lattice[r, c] = 0
+                else:
+                    new_lattice[r, c] = 1
+            
+            elif lattice[r, c] == 0:
+                if sum(neighbors) == 3:
+                    new_lattice[r, c] = 1
+    return new_lattice
+check_neighbors(new_grid)
+
+# Display matrices at steps t = [0, 50, 100, 200]
+steps_to_display = [0, 50, 100, 200]
+for step in range(steps + 1):
+    if step in steps_to_display:
+        plt.figure(figsize= (4, 6))
+        plt.title(f"Step {step}")
+        plt.imshow(new_grid, cmap='binary')
+        plt.axis('off')
+        plt.show()
+    if step != steps:  # Don't update grid on the last step
+        new_grid = check_neighbors(new_grid)
